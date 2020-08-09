@@ -11,40 +11,28 @@ export default class CardsContainer extends Component {
     }
     
     componentDidMount() {
-    //     axios({
-    //         "method":"GET",
-    //         "url":"https://community-open-weather-map.p.rapidapi.com/forecast",
-    //         "headers":{
-    //         "content-type":"application/octet-stream",
-    //         "x-rapidapi-host":"community-open-weather-map.p.rapidapi.com",
-    //         "x-rapidapi-key":"0c5452f58cmsha5e0cca4ba753b1p1ed74bjsn5b2eb1d77afe",
-    //         "useQueryString":true
-    //         },"params":{
-    //         "units":"imperial",
-    //         "zip":"32607"
-    //         }
-    //         })
-    //         .then((response)=>{
-    //           console.log(response)
-    //           weatherData = response;
-    //           this.setState({
-    //             weatherData : response
-    //           });
-    //         })
-    //         .catch((error)=>{
-    //           console.log(error)
-    //         })
-     
+        let forecast = {};
         //Adding this as an alternative because I'm not about to pay for a weather api
         //reads in a json response that I saved from the weather api
         const weatherForecast = require("../json/weatherForecast.json");
+        weatherForecast.list.forEach(element => {
+            //isolate the date from a string such as "2020-08-10 15:00:00"
+            let re = /[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])/
+            let currentDate = re.exec(element.dt_txt)[0];
+            //if we don't have an attribute for the current date in forecast object
+            //make one
+            if(!forecast.hasOwnProperty(currentDate)){
+                forecast[currentDate] = [];
+            }
+            //tack the forecast data on for that date
+            //There is data for every 3 hours
+            forecast[currentDate].push(element);
+        });
+        console.log(forecast);
         this.setState({
-            weatherData : weatherForecast
-        })
-}
-    
-    
-
+            weatherData : forecast
+        });
+    }
 
     render() {
         const {weatherData} = this.state;
